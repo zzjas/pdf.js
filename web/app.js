@@ -995,19 +995,26 @@ const PDFViewerApplication = {
     throw new Error("PDF document not downloaded.");
   },
 
-  async download() {
-    const url = this._downloadUrl;
+  async get_filename() {
     let filename = this._docFilename;
+    console.log(`Filename is ${filename}`)
 
     let metadata  = await this.pdfDocument.getMetadata();
     let title = metadata.info.Title;
+    console.log(`Title is ${title}`)
     if(!title) title = filename.replace(".pdf", "");
 
     // Handle title
     if(title.includes(":")) title = title.split(":")[0];
-    title = title.replace(" ", "-");
+    title = title.replaceAll(" ", "-");
 
     filename = title.concat(".pdf");
+    return filename;
+  },
+
+  async download() {
+    const url = this._downloadUrl,
+      filename = await this.get_filename();
     try {
       this._ensureDownloadComplete();
 
@@ -1030,7 +1037,7 @@ const PDFViewerApplication = {
     await this.pdfScriptingManager.dispatchWillSave();
 
     const url = this._downloadUrl,
-      filename = this._docFilename;
+      filename = await this.get_filename();
     try {
       this._ensureDownloadComplete();
 
