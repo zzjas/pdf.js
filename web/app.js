@@ -996,8 +996,18 @@ const PDFViewerApplication = {
   },
 
   async download() {
-    const url = this._downloadUrl,
-      filename = this._docFilename;
+    const url = this._downloadUrl;
+    let filename = this._docFilename;
+
+    let metadata  = await this.pdfDocument.getMetadata();
+    let title = metadata.info.Title;
+    if(!title) title = filename.replace(".pdf", "");
+
+    // Handle title
+    if(title.includes(":")) title = title.split(":")[0];
+    title = title.replace(" ", "-");
+
+    filename = title.concat(".pdf");
     try {
       this._ensureDownloadComplete();
 
